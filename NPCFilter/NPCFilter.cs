@@ -45,7 +45,7 @@ namespace NPCFilter
 
 		public override void Initialize()
 		{
-			TShockAPI.Commands.ChatCommands.Add(new Command("npcfilter", FilterNPC, "npcfilter"));
+			TShockAPI.Commands.ChatCommands.Add(new Command("npcfilter.use", FilterNPC, "npcfilter"));
 			ServerApi.Hooks.NpcSpawn.Register(this, OnSpawn);
 			ServerApi.Hooks.NpcTransform.Register(this, OnTransform);
 			FilterStorage.FilterRead += OnFilterRead;
