@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace NPCFilter
 {
-	[ApiVersion(1, 18)]
+	[ApiVersion(1, 19)]
 	public class NPCFilter : TerrariaPlugin
 	{
 		public override Version Version
