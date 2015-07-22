@@ -40,7 +40,6 @@ namespace NPCFilter
 		}
 
 		public static FilterStorage filterStorage = new FilterStorage();
-		private List<int> Filtered = new List<int>();
 		public string path = Path.Combine(TShock.SavePath, "NPCFilter.json");
 
 		public override void Initialize()
@@ -48,7 +47,6 @@ namespace NPCFilter
 			TShockAPI.Commands.ChatCommands.Add(new Command("npcfilter.use", FilterNPC, "npcfilter"));
 			ServerApi.Hooks.NpcSpawn.Register(this, OnSpawn);
 			ServerApi.Hooks.NpcTransform.Register(this, OnTransform);
-			FilterStorage.FilterRead += OnFilterRead;
 
 			if (File.Exists(path))
 			{
@@ -66,16 +64,11 @@ namespace NPCFilter
 			base.Dispose(disposing);
 		}
 
-		public void OnFilterRead(FilterStorage file)
-		{
-			Filtered = file.FilteredNPCs;
-		}
-
 		private void FilterNPC(CommandArgs args)
 		{
 			if (args.Parameters.Count == 1 && args.Parameters[0] == "list")
 			{
-				args.Player.SendInfoMessage("Banned NPC IDs: " + string.Join(", ", Filtered) + ".");
+				args.Player.SendInfoMessage("Banned NPC IDs: " + string.Join(", ", filterStorage.FilteredNPCs) + ".");
 				return;
 			}
 			else if (args.Parameters.Count == 1 && args.Parameters[0] == "reload")
@@ -107,12 +100,12 @@ namespace NPCFilter
 				{
 					case "add":
 						{
-							if (Filtered.Contains(npc.netID))
+							if (filterStorage.FilteredNPCs.Contains(npc.netID))
 							{
 								args.Player.SendErrorMessage("NPC ID {0} is already on the filter list!", npc.netID);
 								return;
 							}
-							Filtered.Add(npc.netID);
+							filterStorage.FilteredNPCs.Add(npc.netID);
 							File.WriteAllText(path, JsonConvert.SerializeObject(filterStorage, Formatting.Indented));
 							args.Player.SendSuccessMessage("Successfully added NPC ID to filter list: {0}!", npc.netID);
 							break;
@@ -121,12 +114,12 @@ namespace NPCFilter
 					case "del":
 					case "remove":
 						{
-							if (!Filtered.Contains(npc.netID))
+							if (!filterStorage.FilteredNPCs.Contains(npc.netID))
 							{
 								args.Player.SendErrorMessage("NPC ID {0} is not on the filter list!", npc.netID);
 								return;
 							}
-							Filtered.Remove(npc.netID);
+							filterStorage.FilteredNPCs.Remove(npc.netID);
 							File.WriteAllText(path, JsonConvert.SerializeObject(filterStorage, Formatting.Indented));
 							args.Player.SendSuccessMessage("Successfully removed NPC ID from filter list: {0}!", npc.netID);
 							break;
@@ -153,7 +146,7 @@ namespace NPCFilter
 		{
 			if (args.Handled)
 				return;
-			if (Filtered.Contains(Main.npc[args.NpcId].netID))
+			if (filterStorage.FilteredNPCs.Contains(Main.npc[args.NpcId].netID))
 			{
 				Main.npc[args.NpcId].active = false;
 			}
@@ -163,7 +156,7 @@ namespace NPCFilter
 		{
 			if (args.Handled)
 				return;
-			if (Filtered.Contains(Main.npc[args.NpcId].netID))
+			if (filterStorage.FilteredNPCs.Contains(Main.npc[args.NpcId].netID))
 			{
 				args.Handled = true;
 				Main.npc[args.NpcId].active = false;
