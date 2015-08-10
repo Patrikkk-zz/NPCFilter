@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using TerrariaApi.Server;
 using TShockAPI;
-using TShockAPI.DB;
 using Terraria;
 using Newtonsoft.Json;
 using System.Linq;
 
 namespace NPCFilter
 {
-	[ApiVersion(1, 19)]
+	[ApiVersion(1, 21)]
 	public class NPCFilter : TerrariaPlugin
 	{
 		public override Version Version
